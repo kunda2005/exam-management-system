@@ -1,0 +1,146 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+
+// Class to represent a Student
+class Student {
+    int id;
+    String name;
+    int marks;
+
+    public Student(int id, String name) {
+        this.id = id;
+        this.name = name;
+        this.marks = -1; // -1 indicates marks not assigned yet
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id + ", Name: " + name + ", Marks: " + (marks == -1 ? "Not Assigned" : marks);
+    }
+}
+
+// Main class for the Exam Management System
+public class ExamManagementSystemSwing {
+    private final ArrayList<Student> students = new ArrayList<>();
+
+    // Frame and components
+    private JFrame frame;
+    private JTextField idField, nameField, marksField;
+    private JTextArea resultArea;
+
+    public ExamManagementSystemSwing() {
+        // Set up the main frame
+        frame = new JFrame("Exam Management System");
+        frame.setSize(500, 400);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+
+        // Title
+        JLabel title = new JLabel("Exam Management System", JLabel.CENTER);
+        title.setFont(new Font("Arial", Font.BOLD, 20));
+        frame.add(title, BorderLayout.NORTH);
+
+        // Panel for form inputs and buttons
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(5, 2, 10, 10));
+
+        // ID Field
+        panel.add(new JLabel("Student ID:"));
+        idField = new JTextField();
+        panel.add(idField);
+
+        // Name Field
+        panel.add(new JLabel("Student Name:"));
+        nameField = new JTextField();
+        panel.add(nameField);
+
+        // Marks Field
+        panel.add(new JLabel("Marks:"));
+        marksField = new JTextField();
+        panel.add(marksField);
+
+        // Buttons
+        JButton addButton = new JButton("Add Student");
+        JButton assignButton = new JButton("Assign Marks");
+        JButton displayButton = new JButton("Display Results");
+
+        panel.add(addButton);
+        panel.add(assignButton);
+        panel.add(displayButton);
+
+        frame.add(panel, BorderLayout.CENTER);
+
+        // Result Area
+        resultArea = new JTextArea();
+        resultArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(resultArea);
+        frame.add(scrollPane, BorderLayout.SOUTH);
+
+        // Button Actions
+        addButton.addActionListener(e -> addStudent());
+        assignButton.addActionListener(e -> assignMarks());
+        displayButton.addActionListener(e -> displayResults());
+
+        // Make frame visible
+        frame.setVisible(true);
+    }
+
+    // Add Student
+    private void addStudent() {
+        try {
+            int id = Integer.parseInt(idField.getText());
+            String name = nameField.getText();
+            if (name.isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "Name cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            students.add(new Student(id, name));
+            JOptionPane.showMessageDialog(frame, "Student added successfully!");
+            clearFields();
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(frame, "Invalid ID!", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // Assign Marks
+    private void assignMarks() {
+        try {
+            int id = Integer.parseInt(idField.getText());
+            int marks = Integer.parseInt(marksField.getText());
+            for (Student student : students) {
+                if (student.id == id) {
+                    student.marks = marks;
+                    JOptionPane.showMessageDialog(frame, "Marks assigned successfully!");
+                    clearFields();
+                    return;
+                }
+            }
+            JOptionPane.showMessageDialog(frame, "Student with ID " + id + " not found!", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(frame, "Invalid input!", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // Display Results
+    private void displayResults() {
+        StringBuilder results = new StringBuilder("Student Results:\n");
+        for (Student student : students) {
+            results.append(student).append("\n");
+        }
+        resultArea.setText(results.toString());
+    }
+
+    // Clear input fields
+    private void clearFields() {
+        idField.setText("");
+        nameField.setText("");
+        marksField.setText("");
+    }
+
+    // Main Method
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(ExamManagementSystemSwing::new);
+    }
+}
